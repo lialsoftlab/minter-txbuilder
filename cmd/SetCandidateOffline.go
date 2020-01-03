@@ -92,6 +92,7 @@ var SetCandidateOfflineCmd = &cobra.Command{
 
 		fmt.Println("Validator pubkey:", validator_pubkey)
 		fmt.Println("Owner pubkey:", wlt.PublicKey())
+		fmt.Println("Owner address:", wlt.Address())
 		fmt.Println("TX OFF:", tx_enc)
 
 		f, err := os.Create(fmt.Sprintf("tx_off_%s.yaml", validator_pubkey))
@@ -99,11 +100,11 @@ var SetCandidateOfflineCmd = &cobra.Command{
 			fmt.Println(err)
 			return
 		}
-		defer exitIfItIsError(f.Close())
+		defer Close(f)
 
 		_, err = f.WriteString(fmt.Sprintf(
-			"validator_pubkey: %s\nowner_pubkey: %s\ntx_off: %s\n",
-			validator_pubkey, wlt.PublicKey(), tx_enc))
+			"validator_pubkey: %s\nowner_pubkey: %s\nowner_address: %s\ntx_off: %s\n",
+			validator_pubkey, wlt.PublicKey(), wlt.Address(), tx_enc))
 		exitIfItIsError(err)
 	},
 }
@@ -156,4 +157,9 @@ func getCoin() string {
 	} else {
 		return "BIP"
 	}
+}
+
+func Close(f *os.File) {
+	err := f.Close()
+	exitIfItIsError(err)
 }
